@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from "react-native";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Button, Form, FormGroup, Input, Label } from "reactstrap";
+import { Button, Form, FormGroup, Input, Label, Progress } from "reactstrap";
 import { router } from "expo-router";
 import { useState } from "react";
 import { tokenToString } from "typescript";
@@ -225,39 +225,51 @@ currentList = learningWordBatches[0];
 
 export default function App() {
   const [text, setText] = useState("");
-  const [wordIndex, setWordIndex] = useState(0);
+  const [batch, setBatch] = useState(0);
+  const [learningList, setLearningList] = useState(learningWordBatches[batch]);
   function handleChange(input) {
     setText(input.target.value);
   }
   function handleKey(event) {
     if (event.key === "Enter") {
-      console.log("hi");
       answerChecker();
     }
   }
 
   function answerChecker() {
     let answer = text;
-    if (answer === currentList[wordIndex][1]) {
-      console.log("well done");
+    if (text === "") {
+      return;
     }
+    let tempList = learningList;
+    let wordPair = tempList.shift();
+
+    if (answer === wordPair[1]) {
+      setLearningList(tempList);
+    } else if (learningList.filter((item) => item === wordPair).length < 3) {
+      tempList.push(wordPair);
+      tempList.push(wordPair);
+      setLearningList(tempList);
+    }
+    setText("");
   }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.bigHeading}>{currentList[wordIndex]}</Text>
+      <Text style={styles.bigHeading}>{learningList[0][0]}</Text>
 
       <Input
         type="text"
+        value={text}
         name="text"
-        id="vocab box 1"
         style={styles.inputBox}
         placeholder="Enter some hiragana "
         onChange={handleChange}
         onKeyDownCapture={handleKey}
       />
 
-      <Text style={styles.smallHeading}>{currentList[wordIndex][0]}</Text>
+      <Text style={styles.smallHeading}>{learningList[0][1]}</Text>
+      <Text style={styles.smallHeading}>{learningList.length} words left</Text>
     </View>
   );
 }
