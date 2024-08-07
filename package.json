@@ -1,7 +1,7 @@
 {
   "name": "learner-lite",
   "version": "1.0.0",
-  "main": "expo/AppEntry.js",
+  "main": "expo-router/entry",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
@@ -12,12 +12,16 @@
     "@expo/metro-runtime": "~3.2.1",
     "bootstrap": "^5.3.3",
     "expo": "~51.0.24",
+    "expo-router": "^3.5.20",
     "expo-status-bar": "~1.12.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-native": "0.74.3",
     "react-native-web": "~0.19.10",
-    "reactstrap": "^9.2.2"
+    "react-router-dom": "^6.26.0",
+    "reactstrap": "^9.2.2",
+    "typescript": "~5.3.3",
+    "@types/react": "~18.2.79"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"

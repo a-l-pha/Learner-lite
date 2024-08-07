@@ -1,12 +1,16 @@
 import { StyleSheet, Text, View } from "react-native";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Button } from "reactstrap";
+import { router } from "expo-router";
 
 export default function App() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Learner</Text>
-      <Button style={styles.button}>Click here to start</Button>
+      <Button style={styles.button}>Click here to start Training</Button>
+      <Button style={styles.button} onClick={() => router.push("/vocab")}>
+        Test
+      </Button>
     </View>
   );
 }
