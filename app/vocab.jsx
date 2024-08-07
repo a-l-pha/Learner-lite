@@ -3,6 +3,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { Button, Form, FormGroup, Input, Label } from "reactstrap";
 import { router } from "expo-router";
 import { useState } from "react";
+import { tokenToString } from "typescript";
 
 // start of with direct learning direc and then move to words
 // if the user gets it wrong phonetic spellings are given as answers
@@ -215,34 +216,48 @@ const top50Katakana = [
   ["ポケット", "poketto"],
 ];
 
-export default function App() {
-  let learningWordBatches = [];
-  for (let i = 0; i < hirigana.length; i += 10) {
-    const batch = hirigana.slice(i, i + 10);
-    learningWordBatches.push(batch);
-  }
-  const [text, setText] = useState("");
+let learningWordBatches = [];
+for (let i = 0; i < hirigana.length; i += 10) {
+  const batch = hirigana.slice(i, i + 10);
+  learningWordBatches.push(batch);
+}
+currentList = learningWordBatches[0];
 
-  function handleTextChange(input) {
-    if (!learningWordBatches) {
-      console.log("Change a diff screen ");
+export default function App() {
+  const [text, setText] = useState("");
+  const [wordIndex, setWordIndex] = useState(0);
+  function handleChange(input) {
+    setText(input.target.value);
+  }
+  function handleKey(event) {
+    if (event.key === "Enter") {
+      console.log("hi");
+      answerChecker();
     }
-    setText(input);
-    console.log("Input changed", input);
+  }
+
+  function answerChecker() {
+    let answer = text;
+    if (answer === currentList[wordIndex][1]) {
+      console.log("well done");
+    }
   }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.bigHeading}>Koi koi / hanafuda</Text>
+      <Text style={styles.bigHeading}>{currentList[wordIndex]}</Text>
+
       <Input
         type="text"
         name="text"
         id="vocab box 1"
         style={styles.inputBox}
         placeholder="Enter some hiragana "
-        onChange={handleTextChange}
+        onChange={handleChange}
+        onKeyDownCapture={handleKey}
       />
-      <Text style={styles.smallHeading}>花札</Text>
+
+      <Text style={styles.smallHeading}>{currentList[wordIndex][0]}</Text>
     </View>
   );
 }
