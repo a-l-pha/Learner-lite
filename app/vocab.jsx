@@ -1,9 +1,10 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Button, Form, FormGroup, Input, Label, Progress } from "reactstrap";
 import { router } from "expo-router";
 import { useState } from "react";
 import { tokenToString } from "typescript";
+import * as Speech from "expo-speech";
 
 // start of with direct learning direc and then move to words
 // if the user gets it wrong phonetic spellings are given as answers
@@ -223,10 +224,23 @@ for (let i = 0; i < hirigana.length; i += 10) {
 }
 currentList = learningWordBatches[0];
 
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    // Pick a random index from 0 to i
+    const j = Math.floor(Math.random() * (i + 1));
+
+    // Swap elements array[i] and array[j]
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
 export default function App() {
   const [text, setText] = useState("");
   const [batch, setBatch] = useState(0);
   const [learningList, setLearningList] = useState(learningWordBatches[batch]);
+  const [hint, setHint] = useState(false);
+  const [test, setTest] = useState(true);
   function handleChange(input) {
     setText(input.target.value);
   }
@@ -236,28 +250,65 @@ export default function App() {
     }
   }
 
+  function textToSpeech() {
+    const text = learningList[0][1];
+    Speech.speak(text, { language: "ja-JP" });
+  }
+
   function answerChecker() {
     let answer = text;
     if (text === "") {
       return;
     }
-    let tempList = learningList;
+
+    let tempList = learningList.slice();
     let wordPair = tempList.shift();
 
-    if (answer === wordPair[1]) {
+    if (tempList.length === 0) {
+      if (batch < learningWordBatches.length) {
+        setBatch(batch + 1);
+        setLearningList(learningWordBatches[batch]);
+      }
+
+      if (test) {
+        let tempList = learningList.slice();
+        setLearningList(shuffleArray(tempList));
+      }
+      return;
+    }
+
+    if (answer === wordPair[1] && !hint) {
       setLearningList(tempList);
-    } else if (learningList.filter((item) => item === wordPair).length < 3) {
+      setHint(false);
+
+      if (test) {
+        let tempList = learningList.slice();
+        setLearningList(shuffleArray(tempList));
+      }
+    } else if (answer != wordPair[1] && !hint) {
+      setHint(true);
+      setText("");
+      return;
+    } else if (learningList.filter((item) => item === wordPair).length < 4) {
+      // Checks if less than three times
       tempList.push(wordPair);
       tempList.push(wordPair);
       setLearningList(tempList);
+
+      if (test) {
+        let tempList = learningList.slice();
+        setLearningList(shuffleArray(tempList));
+      }
     }
     setText("");
+    setHint(false);
   }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.bigHeading}>{learningList[0][0]}</Text>
-
+      <Text onPress={textToSpeech} style={styles.bigHeading}>
+        {learningList[0][1]}
+      </Text>
       <Input
         type="text"
         value={text}
@@ -268,7 +319,12 @@ export default function App() {
         onKeyDownCapture={handleKey}
       />
 
-      <Text style={styles.smallHeading}>{learningList[0][1]}</Text>
+      {hint ? (
+        <Text style={styles.hint}>{learningList[0][0]}</Text>
+      ) : (
+        <Text></Text>
+      )}
+
       <Text style={styles.smallHeading}>{learningList.length} words left</Text>
     </View>
   );
@@ -294,6 +350,12 @@ const styles = StyleSheet.create({
   smallHeading: {
     fontSize: "25px",
     color: "white",
+    marginBottom: "10px",
+    marginTop: "10px",
+  },
+  hint: {
+    fontSize: "30px",
+    color: "purple",
     marginBottom: "10px",
     marginTop: "10px",
   },

@@ -9,7 +9,7 @@ export default function StackLayout() {
           headerTitle: "Title page ",
         }}
       />
-      <Stack.Screen name="hello" />
+      <Stack.Screen name="vocab" />
     </Stack>
   );
 }
