@@ -1,9 +1,7 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Button, Form, FormGroup, Input, Label, Progress } from "reactstrap";
-import { router } from "expo-router";
 import { useState } from "react";
-import { tokenToString } from "typescript";
 import * as Speech from "expo-speech";
 
 // start of with direct learning direc and then move to words
@@ -217,22 +215,43 @@ const top50Katakana = [
   ["ポケット", "poketto"],
 ];
 
+// All the words to learn
 let learningWordBatches = [];
 for (let i = 0; i < hirigana.length; i += 10) {
   const batch = hirigana.slice(i, i + 10);
   learningWordBatches.push(batch);
 }
-currentList = learningWordBatches[0];
 
-function shuffleArray(array) {
-  for (let i = array.length - 1; i > 0; i--) {
-    // Pick a random index from 0 to i
-    const j = Math.floor(Math.random() * (i + 1));
+for (let i = 0; i < top50Katakana.length; i += 10) {
+  const batch = top50Katakana.slice(i, i + 10);
+  learningWordBatches.push(batch);
+}
 
-    // Swap elements array[i] and array[j]
-    [array[i], array[j]] = [array[j], array[i]];
+for (let i = 0; i < top50Kanjii.length; i += 10) {
+  const batch = top50Kanjii.slice(i, i + 10);
+  learningWordBatches.push(batch);
+}
+
+for (let i = 0; i < top100JapaneseWords.length; i += 10) {
+  const batch = top100JapaneseWords.slice(i, i + 10);
+  learningWordBatches.push(batch);
+}
+
+function shuffle(array) {
+  let currentIndex = array.length;
+
+  // While there remain elements to shuffle...
+  while (currentIndex != 0) {
+    // Pick a remaining element...
+    let randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+
+    // And swap it with the current element.
+    [array[currentIndex], array[randomIndex]] = [
+      array[randomIndex],
+      array[currentIndex],
+    ];
   }
-  return array;
 }
 
 export default function App() {
@@ -240,7 +259,7 @@ export default function App() {
   const [batch, setBatch] = useState(0);
   const [learningList, setLearningList] = useState(learningWordBatches[batch]);
   const [hint, setHint] = useState(false);
-  const [test, setTest] = useState(true);
+  const [test, setTest] = useState(false);
   function handleChange(input) {
     setText(input.target.value);
   }
@@ -265,26 +284,27 @@ export default function App() {
     let wordPair = tempList.shift();
 
     if (tempList.length === 0) {
-      if (batch < learningWordBatches.length) {
+      if (test) {
+        setTest(false);
+      } else {
+        setTest(true);
+      }
+
+      if (batch < learningWordBatches.length && !test) {
         setBatch(batch + 1);
+        setLearningList(learningWordBatches[batch]);
+      } else {
         setLearningList(learningWordBatches[batch]);
       }
 
-      if (test) {
-        let tempList = learningList.slice();
-        setLearningList(shuffleArray(tempList));
-      }
+      setText("");
+      setHint(false);
       return;
     }
 
     if (answer === wordPair[1] && !hint) {
       setLearningList(tempList);
       setHint(false);
-
-      if (test) {
-        let tempList = learningList.slice();
-        setLearningList(shuffleArray(tempList));
-      }
     } else if (answer != wordPair[1] && !hint) {
       setHint(true);
       setText("");
@@ -294,14 +314,14 @@ export default function App() {
       tempList.push(wordPair);
       tempList.push(wordPair);
       setLearningList(tempList);
-
-      if (test) {
-        let tempList = learningList.slice();
-        setLearningList(shuffleArray(tempList));
-      }
     }
     setText("");
     setHint(false);
+
+    if (test) {
+      shuffle(tempList);
+      setLearningList(tempList);
+    }
   }
 
   return (
@@ -326,6 +346,11 @@ export default function App() {
       )}
 
       <Text style={styles.smallHeading}>{learningList.length} words left</Text>
+      {test ? (
+        <Text style={styles.smallHeading}>(Random test mode)</Text>
+      ) : (
+        <Text></Text>
+      )}
     </View>
   );
 }
