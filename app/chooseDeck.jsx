@@ -17,10 +17,18 @@ export default function chooseDeck() {
   const [cardWidth, setCardWidth] = useState(
     Dimensions.get("window").width / 3
   );
+  const [column, setColumn] = useState(3);
 
+  // Changes based on the screen size
   const handleScreenWidthChange = () => {
     const screenWidth = Dimensions.get("window").width;
-    setCardWidth(screenWidth / 3);
+    if (screenWidth < 500) {
+      setColumn(2);
+      setCardWidth(screenWidth / 2);
+    } else {
+      setColumn(3);
+      setCardWidth(screenWidth / 3);
+    }
   };
 
   useEffect(() => {
@@ -36,18 +44,43 @@ export default function chooseDeck() {
     };
   }, []);
 
+  // data format of japnese in general
   const data = [
-    { id: "1", title: "Item 1" },
-    { id: "2", title: "Item 2" },
-    { id: "3", title: "Item 3" },
-    { id: "4", title: "Item 4" },
-    { id: "5", title: "Item 5" },
-    { id: "6", title: "Item 6" },
-    { id: "7", title: "Item 7" },
-    { id: "8", title: "Item 8" },
-    { id: "9", title: "Item 9" },
-    { id: "10", title: "Item 10" },
-
+    {
+      id: "1",
+      pictureUrl: "https://clipground.com/images/kanji-clipart-15.jpg",
+      title: "Family greetings",
+      subtitle: "hello",
+      content: [
+        ["Ohayou", "おはよう", "Good morning", "おはよう", "1"],
+        ["Konnichiwa", "こんにちは", "Hello/Good afternoon", "こんにちは", "3"],
+        ["Konbanwa", "こんばんは", "Good evening", "こんばんは", "2"],
+      ],
+    },
+    {
+      id: "2",
+      pictureUrl: "https://clipground.com/images/kanji-clipart-15.jpg",
+      title: "Food and Drink",
+      subtitle: "delicious",
+      content: [
+        ["Sushi", "すし", "Sushi", "すし", "1"],
+        ["Ramen", "ラーメン", "Ramen", "ラーメン", "2"],
+        ["Tempura", "てんぷら", "Tempura", "てんぷら", "3"],
+        // Add more examples here
+      ],
+    },
+    {
+      id: "3",
+      pictureUrl: "https://clipground.com/images/kanji-clipart-15.jpg",
+      title: "Objects in a House",
+      subtitle: "useful",
+      content: [
+        ["Table", "テーブル", "Table", "テーブル", "1"],
+        ["Chair", "いす", "Chair", "いす", "2"],
+        ["Bed", "ベッド", "Bed", "ベッド", "3"],
+        // Add more examples here
+      ],
+    },
     // Add more items
   ];
   const renderItem = ({ item }) => (
@@ -56,13 +89,12 @@ export default function chooseDeck() {
         <CardImg
           top
           style={styles.cardPicture}
-          src="https://clipground.com/images/kanji-clipart-15.jpg"
+          src={item.pictureUrl}
           alt="Card image cap"
         />
         <CardBody>
-          <CardTitle style={styles.title}>Card title</CardTitle>
-          <CardSubtitle>Card subtitle</CardSubtitle>
-          <CardText></CardText>
+          <CardTitle style={styles.title}>{item.title}</CardTitle>
+          <CardSubtitle style={styles.subtitle}>{item.subtitle}</CardSubtitle>
           <Button>Button</Button>
         </CardBody>
       </Card>
@@ -74,12 +106,11 @@ export default function chooseDeck() {
       data={data}
       renderItem={renderItem}
       keyExtractor={(item) => item.id}
-      numColumns={3}
+      numColumns={column}
     />
   );
 }
-const screenWidth = Dimensions.get("window").width;
-const cardWidth = screenWidth / 3;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -94,5 +125,9 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: "50px",
+  },
+  subtitle: {
+    marginBottom: "20px",
+    marginTop: "20px",
   },
 });

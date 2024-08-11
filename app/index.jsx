@@ -9,7 +9,18 @@ export default function App() {
       <Text style={styles.title}>Learner</Text>
       <Button style={styles.button}>Click here to start Training</Button>
       <Button style={styles.button} onClick={() => router.push("/vocab")}>
-        Test
+        Hirigana practice
+      </Button>
+      <Button
+        style={styles.button}
+        onClick={() =>
+          router.push({
+            pathname: "/chooseDeck",
+            params: { data: cardData },
+          })
+        }
+      >
+        Vocabulary practice
       </Button>
     </View>
   );

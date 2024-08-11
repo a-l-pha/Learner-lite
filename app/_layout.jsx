@@ -4,7 +4,7 @@ export default function StackLayout() {
   return (
     <Stack>
       <Stack.Screen
-        name="home"
+        name="index"
         options={{
           headerTitle: "Title page ",
         }}
