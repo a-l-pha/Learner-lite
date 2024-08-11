@@ -10,6 +10,7 @@ export default function StackLayout() {
         }}
       />
       <Stack.Screen name="vocab" />
+      <Stack.Screen name="chooseDeck" />
     </Stack>
   );
 }
